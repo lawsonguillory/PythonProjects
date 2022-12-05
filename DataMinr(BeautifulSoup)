@@ -1,0 +1,32 @@
+# Import necessary libraries
+from flask import Flask, render_template, request, jsonify
+from sklearn.externals import joblib
+
+# Load the model
+model = joblib.load("model.pkl")
+
+# Create the Flask app
+app = Flask(__name__)
+
+# Define the routes
+@app.route("/")
+def index():
+    return render_template("index.html")
+
+@app.route("/predict", methods=["POST"])
+def predict():
+    # Get the input data from the form
+    data = request.form.to_dict()
+
+    # Preprocess the data
+    X = [data["input1"], data["input2"]]
+
+    # Make the prediction
+    y_pred = model.predict([X])
+
+    # Return the result as JSON
+    return jsonify({"result": y_pred[0]})
+
+# Run the app
+if __name__ == "__main__":
+    app.run()
